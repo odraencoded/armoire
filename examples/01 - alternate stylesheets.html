@@ -1,0 +1,25 @@
+<!doctype html>
+<meta charset="utf-8">
+
+<title>Armoire Alternating Stylesheets Example</title>
+
+<link id="big-style" title="Big" rel="stylesheet" href="01 - big.css">
+<link id="small-style" title="Small" rel="alternate stylesheet" href="01 - small.css">
+
+<style id="white-style" class="color-styles">
+	body { background: white; }
+</style>
+
+<style id="yellow-style" class="color-styles">
+	body { background: yellow; }
+</style>
+
+<p>Color:
+<a href="#yellow-style" class="set-style">Yellow Style</a>
+<a href="#white-style" class="set-style">White Style</a>
+
+<p>Size: 
+<a href="#big-style" class="set-style">Big Style</a>
+<a href="#small-style" class="set-style">Small Style</a>
+
+<script src="../src/wardrobe.js"></script>
