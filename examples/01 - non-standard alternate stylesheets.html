@@ -3,8 +3,12 @@
 
 <title>Armoire Alternating Stylesheets Example</title>
 
-<link id="gray-bg-style" title="Gray" rel="stylesheet" href="gray-bg.css">
-<link id="yellow-bg-style" title="Yellow" rel="alternate stylesheet" href="yellow-bg.css">
+<style id="gray-bg-style" class="background-styles default-style">
+	html { background: gray; }
+</style>
+<style id="yellow-bg-style" class="background-styles">
+	html { background: yellow; }
+</style>
 <script src="../src/armoire.js"></script>
 
 <a href="#gray-bg-style" class="set-style">Gray background</a>

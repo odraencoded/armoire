@@ -19,6 +19,29 @@ QUnit.test('hasClass', function(assert) {
 	assert.equal(Armoire.hasClass(testEl, 'test'), true);
 });
 
+QUnit.test('removeClass', function(assert) {
+	var testEl;
+	
+	testEl = $('<div class="foo bar baz">').get(0);
+	Armoire.removeClass(testEl, 'foo')
+	assert.equal(Armoire.hasClass(testEl, 'foo'), false);
+	assert.equal(Armoire.hasClass(testEl, 'bar'), true);
+	assert.equal(Armoire.hasClass(testEl, 'baz'), true);
+	
+	testEl = $('<div class="foo bar baz">').get(0);
+	Armoire.removeClass(testEl, 'bar')
+	assert.equal(Armoire.hasClass(testEl, 'foo'), true);
+	assert.equal(Armoire.hasClass(testEl, 'bar'), false);
+	assert.equal(Armoire.hasClass(testEl, 'baz'), true);
+	
+	testEl = $('<div class="foo bar baz">').get(0);
+	Armoire.removeClass(testEl, 'baz')
+	assert.equal(Armoire.hasClass(testEl, 'foo'), true);
+	assert.equal(Armoire.hasClass(testEl, 'bar'), true);
+	assert.equal(Armoire.hasClass(testEl, 'baz'), false);
+});
+
+
 QUnit.test('clickElementFilter', function(assert) {
 	var testEl;
 	
@@ -127,8 +150,8 @@ QUnit.test('getStyleGroup', function(assert) {
 	var loneStyleEl = $('<style>').get(0);
 	var loneLinkEl = $('<link rel="stylesheet">').get(0);
 	
-	var groupA1 = $('<style class="group-a">').get(0);
-	var groupA2 = $('<style class="group-a">').get(0);
+	var groupA1 = $('<style class="group-a 1">').get(0);
+	var groupA2 = $('<style class="group-a 2">').get(0);
 	
 	var groupB1 = $('<link rel="stylesheet" class="group-b">').get(0);
 	var groupB2 = $('<link rel="stylesheet" class="group-b">').get(0);
@@ -174,6 +197,21 @@ QUnit.test('getStyleGroup', function(assert) {
 	document.head.removeChild(groupD2);
 });
 
+QUnit.test('disableStyleElement and enableStyleElement', function(assert) {
+	var styleEl = $('<style>').get(0);
+	
+	$(document.head).append(styleEl);
+	
+	Armoire.disableStyleElement(styleEl);
+	assert.ok(styleEl.disabled, "disableStyleElement test");
+	
+	styleEl.disabled = true;
+	Armoire.enableStyleElement(styleEl);
+	assert.ok(styleEl.disabled === false, "enableStyleElement test");
+	
+	document.head.removeChild(styleEl);
+});
+
 QUnit.test('setGroupStyle', function(assert) {
 	var setGroupStyle = Armoire.wrapMethod(Armoire, Armoire.setGroupStyle);
 	
@@ -197,4 +235,60 @@ QUnit.test('setGroupStyle', function(assert) {
 	
 	document.head.removeChild(style1);
 	document.head.removeChild(style2);
+});
+
+QUnit.test('setupDefaultStylePreferences', function(assert) {
+	var setupDefaultStylePreferences = Armoire.wrapMethod(
+		Armoire,
+		Armoire.setupDefaultStylePreferences
+	);
+	
+	// defaultStyleClass tests
+	var style1a = $(
+		'<style class="group-a 1 ' + Armoire.defaultStyleClass + '">'
+	).get(0);
+	var style2a = $('<style class="group-a 2">').get(0);
+	
+	$(document.head)
+	.append(style1a)
+	.append(style2a);
+	
+	setupDefaultStylePreferences();
+	
+	assert.ok(
+		!style1a.disabled && style2a.disabled,
+		"Default style class, enabled / disabled effect test"
+	);
+	
+	assert.ok(
+		Armoire.hasClass(style1a, Armoire.defaultStyleClass) === false,
+		"Default style class, class deletion test"
+	);
+	
+	// disabledStyleClass tests
+	var style1b = $(
+		'<style class="group-b 1 ' + Armoire.disabledStyleClass + '">'
+	).get(0);
+	var style2b = $('<style class="group-b 2">').get(0);
+	
+	$(document.head)
+	.append(style1b)
+	.append(style2b);
+	
+	setupDefaultStylePreferences();
+	
+	assert.ok(
+		style1b.disabled && !style2b.disabled,
+		"Disabled style class, disabled / enabled effect test"
+	);
+	
+	assert.equal(
+		Armoire.hasClass(style1b, Armoire.disabledStyleClass), false,
+		"Disabled style class, class deletion test"
+	);
+	
+	document.head.removeChild(style1a);
+	document.head.removeChild(style2a);
+	document.head.removeChild(style1b);
+	document.head.removeChild(style2b);
 });

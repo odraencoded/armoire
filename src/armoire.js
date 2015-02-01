@@ -12,13 +12,34 @@ if(typeof Armoire === "undefined"){
 				When a link with this class is clicked on, the style element which
 				it links to is enabled.
 				
-				@type {String}
+				@type {string}
 				@defaultvalue
 			**/
 			setStyleClass: 'set-style',
 			
+			/**
+				When {@link Armoire.setupDefaultStylePreferences} is called,
+				style elements with this class are enabled, disabling all other styles
+				in their group.
+				
+				@type {string}
+				@defaultvalue
+			**/
+			defaultStyleClass: 'default-style',
+			
+			
+			/**
+				When {@link Armoire.setupDefaultStylePreferences} is called,
+				style elements with this class are disabled.
+				
+				@type {string}
+				@defaultvalue
+			**/
+			disabledStyleClass: 'disabled-style',
+			
 			// Exporting utility functions for testing
 			hasClass: hasClass,
+			removeClass: removeClass,
 			findAncestor: findAncestor,
 			wrapMethod: wrapMethod,
 		}
@@ -30,8 +51,6 @@ if(typeof Armoire === "undefined"){
 			Then it searches from the clicked element up for an element that passes
 			the {@link Armoire.clickElementFilter}. If an element is found,
 			{@link Armoire.handleValidElementClick} is called with that element.
-			
-			@method
 		**/
 		library.clickEventHandler = function(event) {
 			var targetEl = event.target;
@@ -68,7 +87,6 @@ if(typeof Armoire === "undefined"){
 			Handles a click on a valid element.
 			By default, this will turn on the stylesheet linked by an anchor element.
 			
-			@method
 			@param {HTMLElement} el - The element that was clicked.
 		**/
 		library.handleValidElementClick = function(el) {
@@ -89,7 +107,6 @@ if(typeof Armoire === "undefined"){
 			By default, this means that el is either a LINK element with
 			a stylesheet REL or that el is a STYLE element.
 			
-			@method
 			@param {HTMLElement} el - The element to test
 			@returns {Boolean} Whether el is a valid style element
 		**/
@@ -111,8 +128,13 @@ if(typeof Armoire === "undefined"){
 		
 		/**
 			Gets the group of style elements one style element is part of.
+			By default, if styleEl has a class, all elements that pass
+			{@link Armoire.isValidStyleElement} with the first class of styleEl are
+			returned. (e.g. class="a b" then only "a" class is used). If styleEl
+			doesn't have a class but is a link element with a title, then all link
+			elements with the stylesheet relationship and a title attribute are
+			returned.
 			
-			@method
 			@param {HTMLElement} styleEl - A style element part of the group
 			@returns {HTMLElement[]} An array of style elements including styleEl.
 		**/
@@ -120,7 +142,8 @@ if(typeof Armoire === "undefined"){
 			// First check whether the element has a class
 			var className = styleEl.className;
 			if(className !== "") {
-				var allElements = document.getElementsByClassName(className);
+				var firstClassName = className.split(' ')[0];
+				var allElements = document.getElementsByClassName(firstClassName);
 				var filteredElements = [];
 				for(var i = 0; i < allElements.length; i++) {
 					var iEl = allElements[i];
@@ -160,20 +183,37 @@ if(typeof Armoire === "undefined"){
 			return [styleEl];
 		}
 		
-		
 		/**
 			Sets the active style of a style group.
 			
-			@method
 			@param {HTMLElement[]} styleGroup - A group of style elements
-			@param {HTMLElement} styleEl - The active style
+			@param {HTMLElement} [styleEl] - The active style
 		**/
 		library.setGroupStyle = function(styleGroup, styleEl) {
 			for(var i = 0; i < styleGroup.length; i++) {
 				var iEl = styleGroup[i];
-				var isActiveStyle = iEl === styleEl;
-				iEl.disabled = !isActiveStyle;
+				this.disableStyleElement(iEl);
 			}
+			
+			if(styleEl) {
+				this.enableStyleElement(styleEl);
+			}
+		}
+		
+		/**
+			Enables a style element. By default this sets the disabled property to
+			false.
+		**/
+		library.enableStyleElement = function(styleEl) {
+			styleEl.disabled = false;
+		}
+		
+		/**
+			Disables a style element. By default this sets the disabled property to
+			true.
+		**/
+		library.disableStyleElement = function(styleEl) {
+			styleEl.disabled = true;
 		}
 		
 		/**
@@ -183,7 +223,6 @@ if(typeof Armoire === "undefined"){
 			By default, tests whether an element is an anchor with the class
 			{@link Armoire.setStyleClass}.
 			
-			@method
 			@param {HTMLElement} el - An element to test.
 			@returns {Boolean} Whether the element should be handled by
 			{Armoire.handleValidElementClick}.
@@ -199,7 +238,6 @@ if(typeof Armoire === "undefined"){
 			By default, returns the fragment identifier (href="#fragment-identifier")
 			of an anchor element that was clicked on.
 			
-			@method
 			@param {HTMLElement} el - Element to extract the id from
 			@returns {String} The id of a style element or null if none is found.
 		**/
@@ -215,7 +253,6 @@ if(typeof Armoire === "undefined"){
 		/**
 			Tests whether an element has a given class.
 			
-			@method
 			@param {HTMLElement} el - An element
 			@param {String} cls - A CSS/HTML class
 			@returns {Boolean} Whether el has class cls
@@ -224,10 +261,21 @@ if(typeof Armoire === "undefined"){
 			return (" " + el.className + " ").indexOf(" " + cls + " ") !== -1;
 		}
 		
+		
+		/**
+			Removes a class from an element.
+			
+			@param {HTMLElement} el - An element
+			@param {String} cls - A CSS/HTML class
+		**/
+		function removeClass(el, cls) {
+			var regex = new RegExp('(^|\\s)' + cls + '(\\s|$)');
+			el.className = el.className.replace(regex, ' ');
+		}
+		
 		/**
 			Searches for an ancestor of an element that matches a given criteria.
 			
-			@method
 			@param {HTMLElement} el - The search starts with this element's parent
 			@param {Function} filter - A callback that returns true when a valid
 			ancestor is found.
@@ -251,7 +299,6 @@ if(typeof Armoire === "undefined"){
 		/**
 			Wraps a "this" object into a closure so it can be passed as a callback.
 			
-			@method
 			@param {Object} thisObj - An object to be "this"
 			@param {Function} method - A function to be called with thisObj
 			@returns {Function} A closure that calls "apply" on method with thisObj
@@ -267,14 +314,42 @@ if(typeof Armoire === "undefined"){
 			Initializes Armoire. This is called automatically is sets up event
 			handlers and other stuff.
 			
-			@method
 		**/
 		library.initialize = function() {
-			var that = this;
 			document.addEventListener(
 				'click',
 				wrapMethod(this, this.clickEventHandler)
 			);
+			
+			this.setupDefaultStylePreferences();
+		}
+		
+		/**
+			Enables style elements with the {@link Armoire.defaultStyleClass} class
+			and disables the ones with the {@link Armoire.disabledStyleClass} class,
+			also removes those classes from the elements.
+			
+		**/
+		library.setupDefaultStylePreferences = function() {
+			var styleEls;
+			styleEls = document.getElementsByClassName(this.defaultStyleClass);
+			for(var i = 0; i < styleEls.length; i++) {
+				var iEl = styleEls[i];
+				if(this.isValidStyleElement(iEl)) {
+					removeClass(iEl, this.defaultStyleClass);
+					var styleGroup = this.getStyleGroup(iEl);
+					this.setGroupStyle(styleGroup, iEl);
+				}
+			}
+			
+			styleEls = document.getElementsByClassName(this.disabledStyleClass);
+			for(var i = 0; i < styleEls.length; i++) {
+				var iEl = styleEls[i];
+				if(this.isValidStyleElement(iEl)) {
+					removeClass(iEl, this.disabledStyleClass);
+					this.disableStyleElement(iEl);
+				}
+			}
 		}
 		
 		Armoire = library;
