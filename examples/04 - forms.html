@@ -1,0 +1,75 @@
+<!doctype html>
+<meta charset="utf-8">
+
+<title>Armoire Forms Example</title>
+
+<link id="gray-bg-style" title="Gray" rel="stylesheet" href="gray-bg.css">
+<link id="yellow-bg-style" title="Yellow" rel="alternate stylesheet" href="yellow-bg.css">
+
+<style id="small-text" class="size-styles default-style">
+	html { font-size: small; }
+</style>
+
+<style id="large-text" class="size-styles">
+	html { font-size: large; }
+</style>
+
+<script src="../src/armoire.js"></script>
+
+<select id="dropdown">
+	<option value="yellow-bg-style">Yellow background</option>
+	<option value="gray-bg-style">Gray background</option>
+</select>
+<script>
+	// This is the dropdown for HTML standard alternate stylesheets, therefore
+	// the group id for it is Armoire.standardGroupId instead of a class name.
+	var dropdown = document.getElementById('dropdown');
+	
+	// Setting the initial value of the dropdown to reflect the initial page
+	// style. (keep in mind that Armoire has already loaded the previously saved 
+	// style settings as soon as it was included)
+	dropdown.value = Armoire.getPageStyle(Armoire.standardGroupId);
+	
+	// Sending the selected option to Armoire when it changes is also simple.
+	dropdown.addEventListener('change', function(e) {
+		Armoire.setPageStyle(Armoire.standardGroupId, this.value);
+	});
+</script>
+
+<br><label><input type="radio" name="radio-selector" value="small-text">Small text</label>
+<br><label><input type="radio" name="radio-selector" value="large-text">Large text</label>
+<script>
+	// The style setting related to the radio inputs is grouped by the class
+	// 'size-styles', so we use that as the group id to get its current setting.
+	var sizeStylesValue = Armoire.getPageStyle('size-styles');
+	
+	var radios = document.getElementsByTagName('input');
+	for(var i = 0; i < radios.length; i++) {
+		var radio = radios[i];
+		
+		// Setting the initial value of the radio button to reflect the page style.
+		if(radio.value === sizeStylesValue) {
+			radio.checked = true;
+		}
+		
+		// Integration with forms is extremely easy thanks to the power of strings
+		radio.addEventListener('change', function() {
+			if(this.checked) {
+				Armoire.setPageStyle('size-styles', this.value);
+			}
+		});
+	}
+</script>
+
+<br><button id="save-styles-button">Save Style Settings</button>
+<script>
+	// Mostof the time Armoire does not save changes automatically. Some of
+	// its out-of-the-box stuff (e.g. link handling) might call saveStyles
+	// after changes, but if you are using its style setting methods directly
+	// you have to call saveStyles if you want the styles settings to be saved.
+	var saveStylesButton = document.getElementById('save-styles-button');
+	saveStylesButton.addEventListener('click', function() {
+		Armoire.saveStyles();
+		alert("Styles saved.");
+	});
+</script>

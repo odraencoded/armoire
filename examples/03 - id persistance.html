@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="utf-8">
+
+<title>Armoire Id Persistance Example</title>
+
+<style>
+	a { border: 20px solid black; }
+</style>
+
+<!--
+	Because these have the id and class as the previous examples,
+	the setting will persist even though the content is different.
+-->
+<style id="gray-bg-style" class="background-styles default-style">
+	a { border-color: gray; }
+</style>
+<style id="yellow-bg-style" class="background-styles">
+	a { border-color: yellow; }
+</style>
+<script src="../src/armoire.js"></script>
+
+<a href="#gray-bg-style" class="set-style">Gray border</a>
+<a href="#yellow-bg-style" class="set-style">Yellow border</a>
