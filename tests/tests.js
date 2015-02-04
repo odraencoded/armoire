@@ -2,15 +2,17 @@
 var testHeadHtml = (
 	// Not in groups
 	'<style id="lone-style"></style>' +
-	'<link id="lone-link" rel="stylesheet">' +
+	'<link id="lone-link" rel="stylesheet" href="tests.css">' +
 	
 	// Not stylesheets
 	'<link id="icon-link" rel="icon" title="Icon" class="group-a group-b group-c">' +
 	'<meta id="meta-element" class="group-a group-b group-c">' +
 	
 	// Group of standard links
-	'<link id="standard-link" rel="stylesheet" title="Default">' +
-	'<link id="alternate-link" rel="alternate stylesheet" title="Alternate">' +
+	// Note: On Firefox links to inexistent stylesheets can NOT be disabled and
+	// their .disabled property always returns false.
+	'<link id="standard-link" rel="stylesheet" title="Default" href="tests.css">' +
+	'<link id="alternate-link" rel="alternate stylesheet" title="Alternate" href="tests.css">' +
 	
 	// Group of styles
 	'<style id="style-a-1" class="group-a 1"></style>' + 
@@ -18,11 +20,11 @@ var testHeadHtml = (
 	
 	// Mixed group
 	'<style id="style-b-1" class="group-b 1"></style>' + 
-	'<link id="link-b-2" class="group-b 2" rel="stylesheet">' + 
+	'<link id="link-b-2" class="group-b 2" rel="stylesheet" href="tests.css">' + 
 	
 	// Group of two non-standard links
-	'<link id="link-c-1" class="group-c 1" rel="stylesheet">' + 
-	'<link id="link-c-2" class="group-c 2" rel="stylesheet">'
+	'<link id="link-c-1" class="group-c 1" rel="stylesheet" href="tests.css">' + 
+	'<link id="link-c-2" class="group-c 2" rel="stylesheet" href="tests.css">'
 );
 
 QUnit.test("Export test", function( assert ) {
