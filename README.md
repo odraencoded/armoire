@@ -1,4 +1,8 @@
-Armoire is a javascript library that helps switching between alternate CSS stylesheets.
+Armoire is a small javascript library for switching between alternative CSS stylesheets.
+
+[Download armoire.min.js](https://github.com/odraencoded/armoire/releases/tag/0.0.1)  
+[Source code](https://github.com/odraencoded/armoire/blob/master/src/armoire.js)  
+[Usage examples](https://github.com/odraencoded/armoire/tree/master/examples)  
 
 ## Purpose
 
@@ -17,7 +21,7 @@ Then in a link use the `set-style` class with the `href` attribute referencing t
     <a href="#light-style">Let there be light</a>
     <a href="#dark-style">or darkness</a>
 
-### Non-standard Alternate Stylesheets
+### Non-standard Alternative Stylesheets
 
 You can use Armoire with stylesheets that are do now follow the alternate stylesheets scheme.
 
@@ -30,7 +34,3 @@ To define the default stylesheet of a group use the `default-style` class.
     <script src="armoire.js"></script>
 
 Armoire will automatically check for stylesheets with the `default-style` on initialization, but it doesn't watch for stylesheets added after it was loaded. It's a good idea to include armoire.js after your stylesheets have been defined but before the body of the page so it can setup your page style before anything is shown.
-
-### Other examples
-
-See https://github.com/odraencoded/armoire/tree/master/examples for more examples
